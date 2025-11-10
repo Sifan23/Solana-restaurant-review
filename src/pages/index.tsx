@@ -21,7 +21,9 @@ export default function Home() {
   const [description, setDescription] = useState("");
 
   useEffect(() => {
-    const fetchAccounts = async () => {};
+    const fetchAccounts = async () => {
+      await fetchReviews(REVIEW_PROGRAM_ID, connection).then(setReviews);
+    };
     fetchAccounts();
   }, []);
 
