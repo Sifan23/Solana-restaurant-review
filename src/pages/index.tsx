@@ -10,7 +10,8 @@ import ReviewForm from "@/components/Form";
 //Replace with your own Program_id
 const REVIEW_PROGRAM_ID = "GQr3jxU9exnAt421W6RsjBeVNqFVUQZtGpMDRR9Uqfqk";
 
-export default function Home() {     
+export default function Home() {   
+        const connection = new web3.Connection(web3.clusterApiUrl("devnet"));
     const [txid, setTxid] = useState("");
     const [reviews, setReviews] = useState<Review[]>([]);
 
