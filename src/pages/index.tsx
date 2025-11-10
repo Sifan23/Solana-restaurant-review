@@ -32,7 +32,54 @@ export default function Home() {
     handleTransactionSubmit(review);
   };
 
-  const handleTransactionSubmit = async (review: Review) => {};
+  const handleTransactionSubmit = async (review: Review) => {
+    if (!publicKey) {
+      alert("Please connect your wallet!");
+      return;
+    }
+
+    const buffer = review.serialize();
+    const transaction = new web3.Transaction();
+
+    const [pda] = await web3.PublicKey.findProgramAddressSync(
+      [publicKey.toBuffer(), Buffer.from(review.title)],
+      new web3.PublicKey(REVIEW_PROGRAM_ID)
+    );
+
+    const instruction = new web3.TransactionInstruction({
+      keys: [
+        {
+          pubkey: publicKey,
+          isSigner: true,
+          isWritable: false,
+        },
+        {
+          pubkey: pda,
+          isSigner: false,
+          isWritable: true,
+        },
+        {
+          pubkey: web3.SystemProgram.programId,
+          isSigner: false,
+          isWritable: false,
+        },
+      ],
+      data: buffer,
+      programId: new web3.PublicKey(REVIEW_PROGRAM_ID),
+    });
+
+    transaction.add(instruction);
+
+    try {
+      let txid = await sendTransaction(transaction, connection);
+      setTxid(
+        `Transaction submitted: https://explorer.solana.com/tx/${txid}?cluster=devnet`
+      );
+    } catch (e) {
+      console.log(JSON.stringify(e));
+      alert(JSON.stringify(e));
+    }
+  };
 
   return (
     <main
